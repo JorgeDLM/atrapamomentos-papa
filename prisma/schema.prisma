@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Collection {
+  id         String   @id @default(cuid())
+  slug       String   @unique
+  titleEs    String
+  titleEn    String
+  descEs     String?
+  descEn     String?
+  coverImage String
+  published  Boolean  @default(false)
+  order      Int      @default(0)
+  photos     Photo[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Photo {
+  id           String     @id @default(cuid())
+  cloudinaryId String     @unique
+  url          String
+  width        Int
+  height       Int
+  altEs        String?
+  altEn        String?
+  order        Int        @default(0)
+  collectionId String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+}
