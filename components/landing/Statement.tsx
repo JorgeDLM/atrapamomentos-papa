@@ -1,0 +1,52 @@
+'use client'
+
+import { useEffect, useRef } from 'react'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useTranslations } from 'next-intl'
+
+gsap.registerPlugin(ScrollTrigger)
+
+export default function Statement() {
+  const t = useTranslations('statement')
+  const ref = useRef<HTMLElement>(null)
+  const textRef = useRef<HTMLParagraphElement>(null)
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        textRef.current,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: ref.current,
+            start: 'top 70%',
+            toggleActions: 'play none none none',
+          },
+        },
+      )
+    })
+
+    return () => ctx.revert()
+  }, [])
+
+  return (
+    <section
+      ref={ref}
+      className="bg-stone-dark py-32 md:py-48 px-6"
+    >
+      <div className="max-w-3xl mx-auto text-center">
+        <p
+          ref={textRef}
+          className="font-serif italic text-2xl md:text-4xl text-ivory leading-relaxed opacity-0"
+        >
+          &ldquo;{t('text')}&rdquo;
+        </p>
+      </div>
+    </section>
+  )
+}
