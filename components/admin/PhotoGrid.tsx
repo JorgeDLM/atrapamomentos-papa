@@ -23,7 +23,11 @@ interface PhotoGridProps {
 export default function PhotoGrid({ photos, onDelete }: PhotoGridProps) {
   async function handleDelete(photo: PhotoItem) {
     if (!confirm('Eliminar esta foto?')) return
-    await fetch(`/api/fotos/${photo.id}`, { method: 'DELETE' })
+    const res = await fetch(`/api/fotos/${photo.id}`, { method: 'DELETE' })
+    if (!res.ok) {
+      alert('Error al eliminar la foto. Intenta de nuevo.')
+      return
+    }
     onDelete(photo.id)
   }
 

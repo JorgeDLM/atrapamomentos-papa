@@ -23,6 +23,7 @@ interface PhotoUploaderProps {
 export default function PhotoUploader({ collectionId, onUpload }: PhotoUploaderProps) {
   const [uploading, setUploading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
+  const [error, setError] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
   async function uploadFile(file: File) {
@@ -49,7 +50,7 @@ export default function PhotoUploader({ collectionId, onUpload }: PhotoUploaderP
       )
 
       if (!uploadRes.ok) {
-        console.error('Cloudinary upload failed:', await uploadRes.text())
+        setError('Error al subir la imagen. Intenta de nuevo.')
         return
       }
 
@@ -68,11 +69,12 @@ export default function PhotoUploader({ collectionId, onUpload }: PhotoUploaderP
       })
 
       if (!saveRes.ok) {
-        console.error('Failed to save photo to DB')
+        setError('Error al guardar la foto. Intenta de nuevo.')
         return
       }
 
       const photo = await saveRes.json()
+      setError('')
       onUpload(photo)
     } finally {
       setUploading(false)
@@ -110,6 +112,9 @@ export default function PhotoUploader({ collectionId, onUpload }: PhotoUploaderP
         className="hidden"
         onChange={(e) => handleFiles(e.target.files)}
       />
+      {error && (
+        <p className="text-xs text-red-600 mt-3">{error}</p>
+      )}
       {uploading ? (
         <p className="text-sm text-stone-warm">Subiendo...</p>
       ) : (
