@@ -9,7 +9,7 @@ export default async function AdminLayout({
 }) {
   const session = await auth()
 
-  if (!session) redirect('/admin/login')
+  if (!session) redirect('/login')
 
   return (
     <div className="min-h-screen bg-white">

@@ -1,7 +1,5 @@
 import { db } from '@/lib/db'
 import Hero from '@/components/landing/Hero'
-
-export const dynamic = 'force-dynamic'
 import Statement from '@/components/landing/Statement'
 import CollectionsPreview from '@/components/landing/CollectionsPreview'
 import Bio from '@/components/landing/Bio'
@@ -33,12 +31,17 @@ type Props = {
 export default async function LandingPage({ params }: Props) {
   const { locale } = await params
 
-  const collections = await db.collection.findMany({
-    where: { published: true },
-    orderBy: { order: 'asc' },
-    select: { id: true, slug: true, titleEs: true, titleEn: true, coverImage: true },
-    take: 4,
-  })
+  let collections: { id: string; slug: string; titleEs: string; titleEn: string; coverImage: string | null }[] = []
+  try {
+    collections = await db.collection.findMany({
+      where: { published: true },
+      orderBy: { order: 'asc' },
+      select: { id: true, slug: true, titleEs: true, titleEn: true, coverImage: true },
+      take: 4,
+    })
+  } catch {
+    // DB not available (e.g. placeholder DATABASE_URL) — render page without collections
+  }
 
   return (
     <main>

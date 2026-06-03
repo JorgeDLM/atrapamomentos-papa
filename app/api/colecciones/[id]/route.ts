@@ -6,8 +6,10 @@ type Params = { params: Promise<{ id: string }> }
 
 export async function GET(_req: NextRequest, { params }: Params) {
   const { id } = await params
+  const session = await auth()
+  const where = session ? { id } : { id, published: true }
   const collection = await db.collection.findUnique({
-    where: { id },
+    where,
     include: { photos: { orderBy: { order: 'asc' } } },
   })
   if (!collection) return NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -21,11 +23,19 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   const { id } = await params
   const body = await request.json()
 
-  const updated = await db.collection.update({
-    where: { id },
-    data: body,
-  })
+  // Only allow updating specific fields
+  const { titleEs, titleEn, descEs, descEn, coverImage, slug, published, order } = body
+  const data: Record<string, unknown> = {}
+  if (titleEs !== undefined) data.titleEs = titleEs
+  if (titleEn !== undefined) data.titleEn = titleEn
+  if (descEs !== undefined) data.descEs = descEs
+  if (descEn !== undefined) data.descEn = descEn
+  if (coverImage !== undefined) data.coverImage = coverImage
+  if (slug !== undefined && /^[a-z0-9-]+$/.test(slug)) data.slug = slug
+  if (published !== undefined) data.published = Boolean(published)
+  if (order !== undefined) data.order = Number(order)
 
+  const updated = await db.collection.update({ where: { id }, data })
   return NextResponse.json(updated)
 }
 

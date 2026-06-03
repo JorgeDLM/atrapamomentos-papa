@@ -34,7 +34,11 @@ export default function CollectionEditorClient({ collection, photos: initial }: 
       <div>
         <h2 className="font-serif text-lg mb-6">Fotos</h2>
         <div className="space-y-4">
-          <PhotoUploader collectionId={collection.id} onUpload={handleUpload as any} />
+          <PhotoUploader
+            saveEndpoint="/api/fotos"
+            saveExtra={{ collectionId: collection.id }}
+            onUpload={handleUpload as any}
+          />
           <PhotoGrid photos={photos as any} onDelete={handleDelete} />
         </div>
       </div>

@@ -2,25 +2,13 @@
 
 import { useState, useRef } from 'react'
 
-interface UploadedPhoto {
-  id: string
-  url: string
-  cloudinaryId: string
-  width: number
-  height: number
-  altEs: string | null
-  altEn: string | null
-  order: number
-  collectionId: string
-  createdAt: string
-}
-
 interface PhotoUploaderProps {
-  collectionId: string
-  onUpload: (photo: UploadedPhoto) => void
+  saveEndpoint: string
+  saveExtra?: Record<string, string>
+  onUpload: (photo: any) => void
 }
 
-export default function PhotoUploader({ collectionId, onUpload }: PhotoUploaderProps) {
+export default function PhotoUploader({ saveEndpoint, saveExtra = {}, onUpload }: PhotoUploaderProps) {
   const [uploading, setUploading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
   const [error, setError] = useState('')
@@ -31,12 +19,10 @@ export default function PhotoUploader({ collectionId, onUpload }: PhotoUploaderP
     setUploading(true)
 
     try {
-      // Get signed upload params from our API
       const sigRes = await fetch('/api/upload-signature')
       const { timestamp, signature, apiKey } = await sigRes.json()
 
       const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-
       const formData = new FormData()
       formData.append('file', file)
       formData.append('folder', 'jorge-portfolio')
@@ -56,15 +42,14 @@ export default function PhotoUploader({ collectionId, onUpload }: PhotoUploaderP
 
       const uploaded = await uploadRes.json()
 
-      // Save metadata to our DB
-      const saveRes = await fetch('/api/fotos', {
+      const saveRes = await fetch(saveEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           cloudinaryId: uploaded.public_id,
           width:        uploaded.width,
           height:       uploaded.height,
-          collectionId,
+          ...saveExtra,
         }),
       })
 
@@ -112,16 +97,12 @@ export default function PhotoUploader({ collectionId, onUpload }: PhotoUploaderP
         className="hidden"
         onChange={(e) => handleFiles(e.target.files)}
       />
-      {error && (
-        <p className="text-xs text-red-600 mt-3">{error}</p>
-      )}
+      {error && <p className="text-xs text-red-600 mt-3">{error}</p>}
       {uploading ? (
         <p className="text-sm text-stone-warm">Subiendo...</p>
       ) : (
         <>
-          <p className="text-sm text-stone-warm">
-            Arrastra fotos aqui o haz clic para seleccionar
-          </p>
+          <p className="text-sm text-stone-warm">Arrastra fotos aqui o haz clic para seleccionar</p>
           <p className="text-xs text-stone-warm/50 mt-1">JPG, PNG — multiples archivos</p>
         </>
       )}

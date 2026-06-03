@@ -7,23 +7,22 @@ interface PhotoItem {
   url: string
   width: number
   height: number
-  altEs: string | null
-  altEn: string | null
   order: number
-  collectionId: string
   cloudinaryId: string
   createdAt: string
+  [key: string]: unknown
 }
 
 interface PhotoGridProps {
   photos: PhotoItem[]
+  deleteEndpoint?: string
   onDelete: (id: string) => void
 }
 
-export default function PhotoGrid({ photos, onDelete }: PhotoGridProps) {
+export default function PhotoGrid({ photos, deleteEndpoint = '/api/fotos', onDelete }: PhotoGridProps) {
   async function handleDelete(photo: PhotoItem) {
     if (!confirm('Eliminar esta foto?')) return
-    const res = await fetch(`/api/fotos/${photo.id}`, { method: 'DELETE' })
+    const res = await fetch(`${deleteEndpoint}/${photo.id}`, { method: 'DELETE' })
     if (!res.ok) {
       alert('Error al eliminar la foto. Intenta de nuevo.')
       return
@@ -45,7 +44,7 @@ export default function PhotoGrid({ photos, onDelete }: PhotoGridProps) {
         <div key={photo.id} className="group relative aspect-square bg-ivory-dark overflow-hidden">
           <Image
             src={photo.url}
-            alt={photo.altEs ?? ''}
+            alt=""
             fill
             className="object-cover"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"

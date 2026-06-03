@@ -4,8 +4,11 @@ import { db } from '@/lib/db'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const session = await auth()
+  const where = session ? {} : { published: true }
   const collections = await db.collection.findMany({
+    where,
     orderBy: { order: 'asc' },
     include: { _count: { select: { photos: true } } },
   })

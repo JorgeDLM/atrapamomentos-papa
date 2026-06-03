@@ -23,6 +23,10 @@ export default auth(function proxy(request: any) {
     return NextResponse.next()
   }
 
+  if (pathname === '/login') {
+    return NextResponse.next()
+  }
+
   return intlMiddleware(request)
 })
 

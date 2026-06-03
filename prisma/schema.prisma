@@ -8,7 +8,7 @@ datasource db {
 
 model User {
   id        String   @id @default(cuid())
-  email     String   @unique
+  username  String   @unique
   password  String
   createdAt DateTime @default(now())
 }
@@ -39,5 +39,32 @@ model Photo {
   order        Int        @default(0)
   collectionId String
   collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+}
+
+model Exhibition {
+  id        String            @id @default(cuid())
+  name      String
+  venue     String
+  city      String
+  date      DateTime
+  descEs    String?
+  descEn    String?
+  published Boolean           @default(false)
+  order     Int               @default(0)
+  photos    ExhibitionPhoto[]
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model ExhibitionPhoto {
+  id           String     @id @default(cuid())
+  cloudinaryId String     @unique
+  url          String
+  width        Int
+  height       Int
+  order        Int        @default(0)
+  exhibitionId String
+  exhibition   Exhibition @relation(fields: [exhibitionId], references: [id], onDelete: Cascade)
   createdAt    DateTime   @default(now())
 }
