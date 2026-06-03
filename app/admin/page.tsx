@@ -1,5 +1,7 @@
 import { db } from '@/lib/db'
 import Link from 'next/link'
+
+export const dynamic = 'force-dynamic'
 import DeleteCollectionButton from './DeleteCollectionButton'
 import TogglePublishButton from './TogglePublishButton'
 

@@ -1,5 +1,7 @@
 import { db } from '@/lib/db'
 import Hero from '@/components/landing/Hero'
+
+export const dynamic = 'force-dynamic'
 import Statement from '@/components/landing/Statement'
 import CollectionsPreview from '@/components/landing/CollectionsPreview'
 import Bio from '@/components/landing/Bio'

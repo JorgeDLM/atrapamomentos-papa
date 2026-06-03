@@ -8,11 +8,15 @@ type Props = {
 }
 
 export async function generateStaticParams() {
-  const collections = await db.collection.findMany({
-    where: { published: true },
-    select: { slug: true },
-  })
-  return collections.map((c) => ({ slug: c.slug }))
+  try {
+    const collections = await db.collection.findMany({
+      where: { published: true },
+      select: { slug: true },
+    })
+    return collections.map((c) => ({ slug: c.slug }))
+  } catch {
+    return []
+  }
 }
 
 export default async function CollectionPage({ params }: Props) {

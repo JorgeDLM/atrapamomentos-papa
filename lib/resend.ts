@@ -1,12 +1,15 @@
 import { Resend } from 'resend'
 
-export const resend = new Resend(process.env.RESEND_API_KEY)
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY ?? 'placeholder')
+}
 
 export async function sendContactEmail(data: {
   name: string
   email: string
   message: string
 }) {
+  const resend = getResend()
   return resend.emails.send({
     from: 'Portfolio <noreply@jorgedelamora.com>',
     to:   process.env.CONTACT_EMAIL!,
