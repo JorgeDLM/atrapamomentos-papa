@@ -1,0 +1,44 @@
+{
+  "nav": {
+    "colecciones": "Collections",
+    "sobre": "About Jorge",
+    "contacto": "Contact"
+  },
+  "hero": {
+    "scroll": "Scroll"
+  },
+  "statement": {
+    "text": "I photograph to find what was already there."
+  },
+  "collections": {
+    "title": "Collections",
+    "viewAll": "View all collections",
+    "viewCollection": "View collection",
+    "photos": "photographs"
+  },
+  "bio": {
+    "title": "About Jorge"
+  },
+  "exhibitions": {
+    "title": "Exhibitions"
+  },
+  "contact": {
+    "title": "Contact",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "send": "Send",
+    "sending": "Sending...",
+    "success": "Message sent. Thank you.",
+    "error": "Something went wrong. Please try again."
+  },
+  "footer": {
+    "rights": "All rights reserved"
+  },
+  "gallery": {
+    "photos": "photographs",
+    "close": "Close",
+    "prev": "Previous",
+    "next": "Next"
+  }
+}
