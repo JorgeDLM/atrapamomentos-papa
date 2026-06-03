@@ -3,7 +3,11 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 
-export default function Contact() {
+interface ContactProps {
+  phone?: string
+}
+
+export default function Contact({ phone }: ContactProps) {
   const t = useTranslations('contact')
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
 
@@ -30,9 +34,16 @@ export default function Contact() {
   return (
     <section id="contacto" className="py-24 md:py-40 px-6 md:px-12 bg-ivory-dark">
       <div className="max-w-xl mx-auto">
-        <h2 className="font-serif text-sm uppercase tracking-[0.3em] text-stone-warm mb-16">
-          {t('title')}
-        </h2>
+        <div className="mb-16">
+          <h2 className="font-serif text-sm uppercase tracking-[0.3em] text-stone-warm">
+            {t('title')}
+          </h2>
+          {phone && (
+            <p className="font-sans text-xs text-stone-warm/50 tracking-widest mt-3">
+              {phone}
+            </p>
+          )}
+        </div>
 
         {status === 'success' ? (
           <p className="font-serif text-xl text-stone-dark">{t('success')}</p>

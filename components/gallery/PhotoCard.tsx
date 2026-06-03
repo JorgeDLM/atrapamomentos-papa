@@ -3,6 +3,11 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useLocale } from 'next-intl'
+import { useEffect, useRef } from 'react'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 interface PhotoCardProps {
   slug: string
@@ -10,6 +15,7 @@ interface PhotoCardProps {
   titleEn: string
   coverImage: string
   className?: string
+  parallax?: boolean
 }
 
 export default function PhotoCard({
@@ -18,22 +24,52 @@ export default function PhotoCard({
   titleEn,
   coverImage,
   className = '',
+  parallax = false,
 }: PhotoCardProps) {
   const locale = useLocale()
   const title = locale === 'es' ? titleEs : titleEn
+  const linkRef = useRef<HTMLAnchorElement>(null)
+  const innerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!parallax || !innerRef.current || !linkRef.current) return
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        innerRef.current,
+        { yPercent: -8 },
+        {
+          yPercent: 8,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: linkRef.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true,
+          },
+        },
+      )
+    })
+
+    return () => ctx.revert()
+  }, [parallax])
 
   return (
     <Link
+      ref={linkRef}
       href={`/${locale}/colecciones/${slug}`}
       className={`group relative block overflow-hidden bg-ivory-dark ${className}`}
     >
-      <div className="relative w-full h-full overflow-hidden">
+      <div
+        ref={innerRef}
+        className={parallax ? 'absolute inset-x-0 h-[116%] -top-[8%]' : 'relative w-full h-full overflow-hidden'}
+      >
         <Image
           src={coverImage}
           alt={title}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+          className={`object-cover transition-transform duration-700 ease-out ${parallax ? '' : 'group-hover:scale-[1.03]'}`}
         />
       </div>
 

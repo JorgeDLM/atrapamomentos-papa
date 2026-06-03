@@ -68,3 +68,26 @@ model ExhibitionPhoto {
   exhibition   Exhibition @relation(fields: [exhibitionId], references: [id], onDelete: Cascade)
   createdAt    DateTime   @default(now())
 }
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model SiteSettings {
+  id                    String   @id @default("singleton")
+  phone                 String?
+  heroImageUrl          String   @default("")
+  heroImageCloudinaryId String   @default("")
+  portraitUrl           String   @default("")
+  portraitCloudinaryId  String   @default("")
+  bioEs                 String   @default("")
+  bioEn                 String   @default("")
+  statementEs           String   @default("")
+  statementEn           String   @default("")
+  updatedAt             DateTime @updatedAt
+}

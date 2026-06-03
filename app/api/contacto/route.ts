@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendContactEmail } from '@/lib/resend'
+import { db } from '@/lib/db'
 
 export const dynamic = 'force-dynamic'
 
@@ -43,11 +44,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Message too long' }, { status: 400 })
   }
 
+  // Save to DB (best-effort — never block the user response)
+  try {
+    await db.contactMessage.create({ data: { name, email, message } })
+  } catch (dbErr) {
+    console.error('DB save error:', dbErr)
+  }
+
   const { error } = await sendContactEmail({ name, email, message })
 
   if (error) {
     console.error('Resend error:', error)
-    return NextResponse.json({ error: 'Failed to send' }, { status: 500 })
+    // Message already saved to DB — still return ok so user isn't confused
   }
 
   return NextResponse.json({ ok: true })

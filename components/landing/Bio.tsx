@@ -18,10 +18,12 @@ interface BioProps {
 export default function Bio({ portraitUrl, bioEs, bioEn, locale }: BioProps) {
   const t = useTranslations('bio')
   const ref = useRef<HTMLElement>(null)
+  const portraitInnerRef = useRef<HTMLDivElement>(null)
   const text = locale === 'es' ? bioEs : bioEn
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // Text fade-in on enter
       const items = ref.current?.querySelectorAll('.animate-in') ?? []
       gsap.fromTo(
         Array.from(items),
@@ -39,6 +41,24 @@ export default function Bio({ portraitUrl, bioEs, bioEn, locale }: BioProps) {
           },
         },
       )
+
+      // Portrait inner parallax — image drifts upward as section scrolls past
+      if (portraitInnerRef.current) {
+        gsap.fromTo(
+          portraitInnerRef.current,
+          { yPercent: 0 },
+          {
+            yPercent: -12,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: ref.current,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true,
+            },
+          },
+        )
+      }
     })
 
     return () => ctx.revert()
@@ -47,14 +67,17 @@ export default function Bio({ portraitUrl, bioEs, bioEn, locale }: BioProps) {
   return (
     <section ref={ref} id="sobre" className="py-24 md:py-40 px-6 md:px-12 bg-ivory-dark">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-center">
-        <div className="animate-in relative aspect-[3/4] max-w-sm mx-auto md:mx-0 overflow-hidden">
-          <Image
-            src={portraitUrl}
-            alt="Jorge de la Mora Toscana"
-            fill
-            className="object-cover grayscale"
-            sizes="(max-width: 768px) 100vw, 400px"
-          />
+        <div className="relative aspect-[3/4] max-w-sm mx-auto md:mx-0 overflow-hidden">
+          <div ref={portraitInnerRef} className="absolute inset-x-0 h-[120%] -top-[10%]">
+            <Image
+              src={portraitUrl}
+              alt="Jorge de la Mora Toscana"
+              fill
+              unoptimized
+              className="object-cover grayscale"
+              sizes="(max-width: 768px) 100vw, 400px"
+            />
+          </div>
         </div>
 
         <div>

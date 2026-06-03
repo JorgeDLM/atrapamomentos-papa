@@ -27,6 +27,8 @@ export default function CollectionsPreview({ collections }: CollectionsPreviewPr
   const sectionRef = useRef<HTMLElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
 
+  if (collections.length === 0) return null
+
   useEffect(() => {
     const ctx = gsap.context(() => {
       const items = gridRef.current ? Array.from(gridRef.current.children) : []
@@ -66,26 +68,26 @@ export default function CollectionsPreview({ collections }: CollectionsPreviewPr
         <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-12">
           {featured[0] && (
             <div className="md:col-span-2 aspect-[4/3]">
-              <PhotoCard {...featured[0]} className="h-full" />
+              <PhotoCard {...featured[0]} className="h-full" parallax />
             </div>
           )}
           {(featured[1] || featured[2]) && (
             <div className="flex flex-col gap-3">
               {featured[1] && (
                 <div className="flex-1 aspect-square">
-                  <PhotoCard {...featured[1]} className="h-full" />
+                  <PhotoCard {...featured[1]} className="h-full" parallax />
                 </div>
               )}
               {featured[2] && (
                 <div className="flex-1 aspect-square">
-                  <PhotoCard {...featured[2]} className="h-full" />
+                  <PhotoCard {...featured[2]} className="h-full" parallax />
                 </div>
               )}
             </div>
           )}
           {featured[3] && (
             <div className="md:col-span-3 aspect-[21/9]">
-              <PhotoCard {...featured[3]} className="h-full" />
+              <PhotoCard {...featured[3]} className="h-full" parallax />
             </div>
           )}
         </div>
