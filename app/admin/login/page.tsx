@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -33,6 +34,13 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-ivory flex items-center justify-center">
       <div className="w-full max-w-sm">
+        <Link
+          href="/es"
+          className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-stone-warm hover:text-stone-dark transition-colors duration-[400ms] mb-10"
+        >
+          ← Inicio
+        </Link>
+
         <h1 className="font-serif text-2xl text-center mb-8">
           Jorge de la Mora
         </h1>
@@ -71,7 +79,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-6 py-3 text-xs uppercase tracking-widest border border-stone-dark text-stone-dark hover:bg-stone-dark hover:text-ivory transition-all duration-[400ms] disabled:opacity-50"
+            className="cursor-pointer w-full mt-6 py-3 text-xs uppercase tracking-widest border border-stone-dark text-stone-dark hover:bg-stone-dark hover:text-ivory transition-all duration-[400ms] disabled:opacity-50"
           >
             {loading ? 'Entrando...' : 'Entrar'}
           </button>

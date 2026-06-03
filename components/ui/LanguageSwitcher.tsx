@@ -3,7 +3,11 @@
 import { useLocale } from 'next-intl'
 import { useRouter, usePathname } from 'next/navigation'
 
-export default function LanguageSwitcher() {
+interface Props {
+  className?: string
+}
+
+export default function LanguageSwitcher({ className }: Props) {
   const locale = useLocale()
   const router = useRouter()
   const pathname = usePathname()
@@ -17,7 +21,9 @@ export default function LanguageSwitcher() {
   return (
     <button
       onClick={toggle}
-      className="text-xs uppercase tracking-widest text-stone-warm hover:text-stone-dark transition-colors duration-[400ms]"
+      className={`text-xs uppercase tracking-widest transition-colors duration-[400ms] cursor-pointer ${
+        className ?? 'text-stone-warm hover:text-stone-dark'
+      }`}
       aria-label="Switch language"
     >
       {locale === 'es' ? 'EN' : 'ES'}

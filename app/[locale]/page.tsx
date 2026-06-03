@@ -45,14 +45,15 @@ export default async function LandingPage({ params }: Props) {
     // DB unavailable — use defaults
   }
 
-  let collections: { id: string; slug: string; titleEs: string; titleEn: string; coverImage: string | null }[] = []
+  let collections: { id: string; slug: string; titleEs: string; titleEn: string; coverImage: string }[] = []
   try {
-    collections = await db.collection.findMany({
+    const rawCollections = await db.collection.findMany({
       where: { published: true },
       orderBy: { order: 'asc' },
       select: { id: true, slug: true, titleEs: true, titleEn: true, coverImage: true },
       take: 4,
     })
+    collections = rawCollections.map(c => ({ ...c, coverImage: c.coverImage ?? '' }))
   } catch {
     // DB not available
   }

@@ -17,6 +17,9 @@ export default function Nav() {
   }, [])
 
   const base = `/${locale}`
+  const linkClass = scrolled
+    ? 'text-stone-warm hover:text-stone-dark'
+    : 'text-ivory/80 hover:text-ivory'
 
   return (
     <nav
@@ -27,31 +30,24 @@ export default function Nav() {
       <div className="max-w-7xl mx-auto px-6 md:px-12 py-6 flex justify-between items-center">
         <Link
           href={base}
-          className="font-serif text-base tracking-wide hover:opacity-70 transition-opacity duration-[400ms]"
+          className={`font-serif text-base tracking-wide hover:opacity-70 transition-all duration-[400ms] ${
+            scrolled ? 'text-stone-dark' : 'text-ivory'
+          }`}
         >
           Jorge de la Mora
         </Link>
 
         <div className="flex items-center gap-8">
-          <Link
-            href={`${base}#colecciones`}
-            className="text-xs uppercase tracking-widest text-stone-warm hover:text-stone-dark transition-colors duration-[400ms]"
-          >
+          <Link href={`${base}#colecciones`} className={`text-xs uppercase tracking-widest transition-colors duration-[400ms] ${linkClass}`}>
             {t('colecciones')}
           </Link>
-          <Link
-            href={`${base}#sobre`}
-            className="text-xs uppercase tracking-widest text-stone-warm hover:text-stone-dark transition-colors duration-[400ms]"
-          >
+          <Link href={`${base}#sobre`} className={`text-xs uppercase tracking-widest transition-colors duration-[400ms] ${linkClass}`}>
             {t('sobre')}
           </Link>
-          <Link
-            href={`${base}#contacto`}
-            className="text-xs uppercase tracking-widest text-stone-warm hover:text-stone-dark transition-colors duration-[400ms]"
-          >
+          <Link href={`${base}#contacto`} className={`text-xs uppercase tracking-widest transition-colors duration-[400ms] ${linkClass}`}>
             {t('contacto')}
           </Link>
-          <LanguageSwitcher />
+          <LanguageSwitcher className={linkClass} />
         </div>
       </div>
     </nav>

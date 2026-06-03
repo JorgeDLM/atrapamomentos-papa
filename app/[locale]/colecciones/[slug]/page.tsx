@@ -13,7 +13,7 @@ export async function generateStaticParams() {
       where: { published: true },
       select: { slug: true },
     })
-    return collections.map((c) => ({ slug: c.slug }))
+    return collections.map((c: { slug: string }) => ({ slug: c.slug }))
   } catch {
     return []
   }

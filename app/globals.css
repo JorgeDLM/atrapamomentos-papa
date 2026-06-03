@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+@layer base {
+  a,
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  label[for],
+  select,
+  summary {
+    cursor: pointer;
+  }
+}
+
 @theme {
   --color-ivory: #F5F0EB;
   --color-ivory-light: #FDFAF7;

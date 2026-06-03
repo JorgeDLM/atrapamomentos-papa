@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Collection } from '@prisma/client'
+import CoverUploader from './CoverUploader'
 
 interface CollectionFormProps {
   collection?: Collection
@@ -129,15 +130,13 @@ export default function CollectionForm({ collection }: CollectionFormProps) {
       </div>
 
       <div>
-        <label className="block text-xs uppercase tracking-widest text-stone-warm mb-2">
-          URL foto portada (Cloudinary)
+        <label className="block text-xs uppercase tracking-widest text-stone-warm mb-3">
+          Foto de portada
         </label>
-        <input
-          name="coverImage"
+        <CoverUploader
           defaultValue={collection?.coverImage ?? ''}
+          name="coverImage"
           required
-          className="w-full border-b border-gray-300 bg-transparent py-2 outline-none focus:border-stone-dark transition-colors duration-[400ms] font-mono text-sm"
-          placeholder="https://res.cloudinary.com/..."
         />
       </div>
 

@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import ExhibitionForm from '@/components/admin/ExhibitionForm'
-import PhotoUploader from '@/components/admin/PhotoUploader'
-import PhotoGrid from '@/components/admin/PhotoGrid'
+import DropZone from '@/components/admin/DropZone'
+import SortableGrid, { type PhotoItem } from '@/components/admin/SortableGrid'
 import type { Exhibition, ExhibitionPhoto } from '@prisma/client'
 
 interface Props {
@@ -12,36 +12,39 @@ interface Props {
 }
 
 export default function ExhibitionEditorClient({ exhibition, photos: initial }: Props) {
-  const [photos, setPhotos] = useState<ExhibitionPhoto[]>(initial)
+  const [photos, setPhotos] = useState<PhotoItem[]>(initial as PhotoItem[])
 
-  function handleUpload(newPhoto: ExhibitionPhoto) {
-    setPhotos((prev) => [...prev, newPhoto])
+  function handleUpload(photo: PhotoItem) {
+    setPhotos(prev => [...prev, photo])
   }
 
   function handleDelete(id: string) {
-    setPhotos((prev) => prev.filter((p) => p.id !== id))
+    setPhotos(prev => prev.filter(p => p.id !== id))
+  }
+
+  function handleReorder(updated: PhotoItem[]) {
+    setPhotos(updated)
   }
 
   return (
     <div className="space-y-16">
       <div>
-        <h1 className="font-serif text-2xl mb-10">
-          Editar — {exhibition.name}
-        </h1>
+        <h1 className="font-serif text-2xl mb-10">Editar — {exhibition.name}</h1>
         <ExhibitionForm exhibition={exhibition} />
       </div>
 
       <div>
         <h2 className="font-serif text-lg mb-6">Fotos</h2>
-        <div className="space-y-4">
-          <PhotoUploader
+        <div data-dropzone="gallery" className="space-y-3">
+          <DropZone
             saveEndpoint={`/api/exposiciones/${exhibition.id}/fotos`}
-            onUpload={handleUpload as any}
+            onUpload={handleUpload}
           />
-          <PhotoGrid
-            photos={photos as any}
-            deleteEndpoint="/api/exposiciones/fotos"
+          <SortableGrid
+            photos={photos}
+            endpoint="/api/exposiciones/fotos"
             onDelete={handleDelete}
+            onReorder={handleReorder}
           />
         </div>
       </div>
