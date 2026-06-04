@@ -53,7 +53,7 @@ export default async function LandingPage({ params }: Props) {
       select: { id: true, slug: true, titleEs: true, titleEn: true, coverImage: true },
       take: 4,
     })
-    collections = rawCollections.map(c => ({ ...c, coverImage: c.coverImage ?? '' }))
+    collections = rawCollections.map((c: { id: string; slug: string; titleEs: string; titleEn: string; coverImage: string | null }) => ({ ...c, coverImage: c.coverImage ?? '' }))
   } catch {
     // DB not available
   }
