@@ -17,8 +17,7 @@ export async function uploadImage(
   const sigRes = await fetch('/api/upload-signature')
   if (!sigRes.ok) throw new Error('No se pudo obtener la firma de subida')
 
-  const { timestamp, signature, apiKey } = await sigRes.json()
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+  const { timestamp, signature, apiKey, cloudName } = await sigRes.json()
 
   const fd = new FormData()
   fd.append('file', file)
@@ -57,8 +56,7 @@ export async function uploadImageDirect(
   const sigRes = await fetch('/api/upload-signature')
   if (!sigRes.ok) throw new Error('No se pudo obtener la firma de subida')
 
-  const { timestamp, signature, apiKey } = await sigRes.json()
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+  const { timestamp, signature, apiKey, cloudName } = await sigRes.json()
 
   const fd = new FormData()
   fd.append('file', file)
@@ -67,11 +65,10 @@ export async function uploadImageDirect(
   fd.append('signature', signature)
   fd.append('api_key', apiKey)
 
-  const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`
-  console.log('[upload] cloudName:', cloudName)
-  console.log('[upload] POST', uploadUrl)
-
-  const uploadRes = await fetch(uploadUrl, { method: 'POST', body: fd })
+  const uploadRes = await fetch(
+    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+    { method: 'POST', body: fd },
+  )
 
   if (!uploadRes.ok) {
     const errBody = await uploadRes.json().catch(() => null)

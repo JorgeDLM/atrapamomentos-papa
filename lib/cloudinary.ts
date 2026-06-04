@@ -22,5 +22,5 @@ export function generateUploadSignature(folder: string) {
     paramsToSign,
     process.env.CLOUDINARY_API_SECRET!,
   )
-  return { timestamp, signature, apiKey: process.env.CLOUDINARY_API_KEY! }
+  return { timestamp, signature, apiKey: process.env.CLOUDINARY_API_KEY!, cloudName: process.env.CLOUDINARY_CLOUD_NAME! }
 }
