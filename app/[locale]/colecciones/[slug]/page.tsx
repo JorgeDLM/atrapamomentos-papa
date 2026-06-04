@@ -36,7 +36,7 @@ export default async function CollectionPage({ params }: Props) {
   const title = locale === 'es' ? collection.titleEs : collection.titleEn
   const desc  = locale === 'es' ? collection.descEs  : collection.descEn
 
-  const photos = collection.photos.map((p) => ({
+  const photos = collection.photos.map((p: { id: string; url: string; width: number; height: number; altEs: string | null; altEn: string | null }) => ({
     id:     p.id,
     url:    p.url,
     width:  p.width,
