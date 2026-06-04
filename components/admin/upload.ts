@@ -8,41 +8,38 @@ export interface UploadedPhoto {
   [key: string]: unknown
 }
 
+interface CloudinaryUploadResult {
+  cloudinaryId: string
+  url: string
+  width: number
+  height: number
+}
+
+async function uploadToCloudinary(file: File): Promise<CloudinaryUploadResult> {
+  const fd = new FormData()
+  fd.append('file', file)
+
+  const res = await fetch('/api/upload', { method: 'POST', body: fd })
+  if (!res.ok) {
+    const errBody = await res.json().catch(() => null)
+    const msg = errBody?.error ?? `HTTP ${res.status}`
+    throw new Error(msg)
+  }
+  return res.json()
+}
+
 /** Upload a file to Cloudinary and save its metadata to the DB. */
 export async function uploadImage(
   file: File,
   saveEndpoint: string,
   saveExtra: Record<string, string> = {},
 ): Promise<UploadedPhoto> {
-  const sigRes = await fetch('/api/upload-signature')
-  if (!sigRes.ok) throw new Error('No se pudo obtener la firma de subida')
-
-  const { timestamp, signature, apiKey, cloudName } = await sigRes.json()
-
-  const fd = new FormData()
-  fd.append('file', file)
-  fd.append('folder', 'jorge-portfolio')
-  fd.append('timestamp', String(timestamp))
-  fd.append('signature', signature)
-  fd.append('api_key', apiKey)
-
-  const uploadRes = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-    { method: 'POST', body: fd },
-  )
-  if (!uploadRes.ok) throw new Error('Error al subir la imagen a Cloudinary')
-
-  const uploaded = await uploadRes.json()
+  const { cloudinaryId, width, height } = await uploadToCloudinary(file)
 
   const saveRes = await fetch(saveEndpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      cloudinaryId: uploaded.public_id,
-      width: uploaded.width,
-      height: uploaded.height,
-      ...saveExtra,
-    }),
+    body: JSON.stringify({ cloudinaryId, width, height, ...saveExtra }),
   })
   if (!saveRes.ok) throw new Error('Error al guardar la foto en la base de datos')
 
@@ -50,38 +47,6 @@ export async function uploadImage(
 }
 
 /** Upload a file to Cloudinary only — returns the public URL (for cover images). */
-export async function uploadImageDirect(
-  file: File,
-): Promise<{ url: string; cloudinaryId: string; width: number; height: number }> {
-  const sigRes = await fetch('/api/upload-signature')
-  if (!sigRes.ok) throw new Error('No se pudo obtener la firma de subida')
-
-  const { timestamp, signature, apiKey, cloudName } = await sigRes.json()
-
-  const fd = new FormData()
-  fd.append('file', file)
-  fd.append('folder', 'jorge-portfolio')
-  fd.append('timestamp', String(timestamp))
-  fd.append('signature', signature)
-  fd.append('api_key', apiKey)
-
-  const uploadRes = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-    { method: 'POST', body: fd },
-  )
-
-  if (!uploadRes.ok) {
-    const errBody = await uploadRes.json().catch(() => null)
-    console.error('[upload] Cloudinary error:', uploadRes.status, errBody)
-    const msg = errBody?.error?.message ?? `HTTP ${uploadRes.status}`
-    throw new Error(msg)
-  }
-
-  const uploaded = await uploadRes.json()
-  return {
-    cloudinaryId: uploaded.public_id,
-    url: `https://res.cloudinary.com/${cloudName}/image/upload/f_auto,q_auto/${uploaded.public_id}`,
-    width: uploaded.width,
-    height: uploaded.height,
-  }
+export async function uploadImageDirect(file: File): Promise<CloudinaryUploadResult> {
+  return uploadToCloudinary(file)
 }
