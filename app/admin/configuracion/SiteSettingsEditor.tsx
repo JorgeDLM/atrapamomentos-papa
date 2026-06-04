@@ -7,6 +7,8 @@ interface Settings {
   phone: string
   heroImageUrl: string
   heroImageCloudinaryId: string
+  parallaxImageUrl: string
+  parallaxImageCloudinaryId: string
   portraitUrl: string
   portraitCloudinaryId: string
   bioEs: string
@@ -25,7 +27,7 @@ export default function SiteSettingsEditor({ initial }: Props) {
   const [settings,   setSettings]   = useState<Settings>(initial)
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
   const settingsRef  = useRef<Settings>(initial)
-  const fadeTimer    = useRef<ReturnType<typeof setTimeout>>()
+  const fadeTimer    = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   // Keep ref in sync so saveNow always reads latest values
   function update<K extends keyof Settings>(key: K, value: Settings[K]) {
@@ -116,6 +118,25 @@ export default function SiteSettingsEditor({ initial }: Props) {
           value={settings.heroImageUrl}
           onChange={({ url, cloudinaryId }) => {
             const overrides = { heroImageUrl: url, heroImageCloudinaryId: cloudinaryId }
+            setSettings((prev) => { const n = { ...prev, ...overrides }; settingsRef.current = n; return n })
+            saveNow(overrides)
+          }}
+        />
+      </section>
+
+      {/* ── Franja parallax ── */}
+      <section className="space-y-4">
+        <div>
+          <h2 className="font-serif text-lg">Franja intermedia</h2>
+          <p className="text-sm text-stone-warm mt-1">
+            La imagen de camara/equipo que aparece entre las secciones del landing.
+          </p>
+        </div>
+        <ImageUploadField
+          label="Foto de franja"
+          value={settings.parallaxImageUrl}
+          onChange={({ url, cloudinaryId }) => {
+            const overrides = { parallaxImageUrl: url, parallaxImageCloudinaryId: cloudinaryId }
             setSettings((prev) => { const n = { ...prev, ...overrides }; settingsRef.current = n; return n })
             saveNow(overrides)
           }}

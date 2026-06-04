@@ -7,11 +7,10 @@ import ParallaxStrip from '@/components/landing/ParallaxStrip'
 import Exhibitions from '@/components/landing/Exhibitions'
 import Contact from '@/components/landing/Contact'
 
-const PARALLAX_STRIP_URL = 'https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=1920&q=80'
-
 const DEFAULTS = {
   phone: '',
   heroImageUrl: 'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=1920&q=80',
+  parallaxImageUrl: 'https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=1920&q=80',
   portraitUrl: '/jorge.jpg',
   bioEs: 'Jorge de la Mora Toscana fotografía lo que pasa cuando nadie mira. Sus series recorren mercados, calles al amanecer y animales en su ritmo propio, buscando el instante en que lo ordinario revela algo que no tiene nombre.',
   bioEn: 'Jorge de la Mora Toscana photographs what happens when no one is watching. His series traverse markets, streets at dawn, and animals in their own rhythm — searching for the instant when the ordinary reveals something nameless.',
@@ -33,8 +32,9 @@ export default async function LandingPage({ params }: Props) {
     if (raw) {
       site = {
         phone:        raw.phone         ?? DEFAULTS.phone,
-        heroImageUrl: raw.heroImageUrl  || DEFAULTS.heroImageUrl,
-        portraitUrl:  raw.portraitUrl   || DEFAULTS.portraitUrl,
+        heroImageUrl:     raw.heroImageUrl     || DEFAULTS.heroImageUrl,
+        parallaxImageUrl: raw.parallaxImageUrl || DEFAULTS.parallaxImageUrl,
+        portraitUrl:      raw.portraitUrl      || DEFAULTS.portraitUrl,
         bioEs:        raw.bioEs         || DEFAULTS.bioEs,
         bioEn:        raw.bioEn         || DEFAULTS.bioEn,
         statementEs:  raw.statementEs   || DEFAULTS.statementEs,
@@ -97,7 +97,7 @@ export default async function LandingPage({ params }: Props) {
         bioEn={site.bioEn}
         locale={locale}
       />
-      <ParallaxStrip imageUrl={PARALLAX_STRIP_URL} />
+      <ParallaxStrip imageUrl={site.parallaxImageUrl} />
       <Exhibitions exhibitions={exhibitions} locale={locale} />
       <Contact phone={site.phone || undefined} />
     </main>

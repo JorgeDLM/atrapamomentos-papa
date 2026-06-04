@@ -82,9 +82,11 @@ model ContactMessage {
 model SiteSettings {
   id                    String   @id @default("singleton")
   phone                 String?
-  heroImageUrl          String   @default("")
-  heroImageCloudinaryId String   @default("")
-  portraitUrl           String   @default("")
+  heroImageUrl              String   @default("")
+  heroImageCloudinaryId     String   @default("")
+  parallaxImageUrl          String   @default("")
+  parallaxImageCloudinaryId String   @default("")
+  portraitUrl               String   @default("")
   portraitCloudinaryId  String   @default("")
   bioEs                 String   @default("")
   bioEn                 String   @default("")
