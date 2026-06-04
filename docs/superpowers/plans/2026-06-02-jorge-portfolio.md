@@ -753,7 +753,7 @@ git commit -m "feat: next-intl i18n routing (ES/EN) + admin auth middleware"
 {
   "nav": {
     "colecciones": "Colecciones",
-    "sobre": "Sobre Jorge",
+    "sobre": "Jorge",
     "contacto": "Contacto"
   },
   "hero": {
