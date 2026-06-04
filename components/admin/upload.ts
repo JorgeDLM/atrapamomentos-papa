@@ -67,11 +67,18 @@ export async function uploadImageDirect(
   fd.append('signature', signature)
   fd.append('api_key', apiKey)
 
-  const uploadRes = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-    { method: 'POST', body: fd },
-  )
-  if (!uploadRes.ok) throw new Error('Error al subir la imagen')
+  const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`
+  console.log('[upload] cloudName:', cloudName)
+  console.log('[upload] POST', uploadUrl)
+
+  const uploadRes = await fetch(uploadUrl, { method: 'POST', body: fd })
+
+  if (!uploadRes.ok) {
+    const errBody = await uploadRes.json().catch(() => null)
+    console.error('[upload] Cloudinary error:', uploadRes.status, errBody)
+    const msg = errBody?.error?.message ?? `HTTP ${uploadRes.status}`
+    throw new Error(msg)
+  }
 
   const uploaded = await uploadRes.json()
   return {
