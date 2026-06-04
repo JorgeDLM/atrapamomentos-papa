@@ -6,8 +6,11 @@ export const dynamic = 'force-dynamic'
 
 export async function GET() {
   const session = await auth()
-  if (!session) return NextResponse.json({ count: 0 })
+  if (!session) return NextResponse.json({ unread: 0, total: 0 })
 
-  const count = await db.contactMessage.count({ where: { read: false } })
-  return NextResponse.json({ count })
+  const [unread, total] = await Promise.all([
+    db.contactMessage.count({ where: { read: false } }),
+    db.contactMessage.count(),
+  ])
+  return NextResponse.json({ unread, total })
 }

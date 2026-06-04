@@ -7,17 +7,22 @@ import { useEffect, useState } from 'react'
 
 export default function AdminNav() {
   const path = usePathname()
-  const isExpo = path.startsWith('/admin/exposiciones')
-  const isConfig = path.startsWith('/admin/configuracion')
+
+  const isExpo    = path.startsWith('/admin/exposiciones')
+  const isConfig  = path.startsWith('/admin/configuracion')
   const isMensajes = path.startsWith('/admin/mensajes')
   const isCollections = !isExpo && !isConfig && !isMensajes
 
   const [unread, setUnread] = useState(0)
+  const [total,  setTotal]  = useState(-1) // -1 = not yet fetched
 
   useEffect(() => {
     fetch('/api/mensajes/unread')
       .then((r) => r.json())
-      .then((d) => setUnread(d.count ?? 0))
+      .then((d) => {
+        setUnread(d.unread ?? 0)
+        setTotal(d.total ?? 0)
+      })
       .catch(() => {})
   }, [path])
 
@@ -41,19 +46,24 @@ export default function AdminNav() {
           >
             Exposiciones
           </Link>
-          <Link
-            href="/admin/mensajes"
-            className={`relative text-sm transition-colors duration-[400ms] ${
-              isMensajes ? 'text-stone-dark' : 'text-stone-warm hover:text-stone-dark'
-            }`}
-          >
-            Mensajes
-            {unread > 0 && (
-              <span className="absolute -top-1 -right-3 text-[10px] font-sans text-accent">
-                {unread}
-              </span>
-            )}
-          </Link>
+
+          {/* Only show once fetched and there is at least one message */}
+          {total > 0 && (
+            <Link
+              href="/admin/mensajes"
+              className={`relative text-sm transition-colors duration-[400ms] ${
+                isMensajes ? 'text-stone-dark' : 'text-stone-warm hover:text-stone-dark'
+              }`}
+            >
+              Mensajes
+              {unread > 0 && (
+                <span className="absolute -top-1 -right-3 text-[10px] font-sans text-accent">
+                  {unread}
+                </span>
+              )}
+            </Link>
+          )}
+
           <Link
             href="/admin/configuracion"
             className={`text-sm transition-colors duration-[400ms] ${

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import ImageUploadField from '@/components/admin/ImageUploadField'
 
 interface Settings {
@@ -15,58 +15,97 @@ interface Settings {
   statementEn: string
 }
 
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
+
 interface Props {
   initial: Settings
 }
 
 export default function SiteSettingsEditor({ initial }: Props) {
-  const [settings, setSettings] = useState<Settings>(initial)
-  const [saving, setSaving] = useState(false)
-  const [saved, setSaved] = useState(false)
-  const [error, setError] = useState('')
+  const [settings,   setSettings]   = useState<Settings>(initial)
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
+  const settingsRef  = useRef<Settings>(initial)
+  const fadeTimer    = useRef<ReturnType<typeof setTimeout>>()
 
+  // Keep ref in sync so saveNow always reads latest values
   function update<K extends keyof Settings>(key: K, value: Settings[K]) {
-    setSettings((prev) => ({ ...prev, [key]: value }))
-    setSaved(false)
+    setSettings((prev) => {
+      const next = { ...prev, [key]: value }
+      settingsRef.current = next
+      return next
+    })
   }
 
-  async function handleSave() {
-    setSaving(true)
-    setError('')
-    setSaved(false)
+  async function saveNow(overrides?: Partial<Settings>) {
+    const toSave = overrides
+      ? { ...settingsRef.current, ...overrides }
+      : settingsRef.current
+
+    clearTimeout(fadeTimer.current)
+    setSaveStatus('saving')
 
     const res = await fetch('/api/site-settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(settings),
+      body: JSON.stringify(toSave),
     })
 
     if (res.ok) {
-      setSaved(true)
+      setSaveStatus('saved')
+      fadeTimer.current = setTimeout(() => setSaveStatus('idle'), 2500)
     } else {
-      setError('Error al guardar. Intenta de nuevo.')
+      setSaveStatus('error')
+      fadeTimer.current = setTimeout(() => setSaveStatus('idle'), 3000)
     }
-    setSaving(false)
   }
+
+  useEffect(() => () => clearTimeout(fadeTimer.current), [])
 
   return (
     <div className="space-y-16">
-      {/* Phone */}
+
+      {/* ── Save status indicator ── */}
+      <div
+        className={`fixed top-6 right-6 z-50 transition-all duration-500 pointer-events-none ${
+          saveStatus === 'idle' ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'
+        }`}
+      >
+        {saveStatus === 'saving' && (
+          <span className="text-xs uppercase tracking-widest text-stone-warm bg-white border border-gray-200 px-4 py-2 shadow-sm">
+            Guardando…
+          </span>
+        )}
+        {saveStatus === 'saved' && (
+          <span className="text-xs uppercase tracking-widest text-green-700 bg-white border border-green-200 px-4 py-2 shadow-sm">
+            ✓ Guardado
+          </span>
+        )}
+        {saveStatus === 'error' && (
+          <span className="text-xs uppercase tracking-widest text-red-600 bg-white border border-red-200 px-4 py-2 shadow-sm">
+            Error al guardar
+          </span>
+        )}
+      </div>
+
+      {/* ── Teléfono ── */}
       <section className="space-y-4">
         <div>
           <h2 className="font-serif text-lg">Telefono</h2>
-          <p className="text-sm text-stone-warm mt-1">Aparece de forma sutil en la seccion de contacto. Deja vacio para no mostrarlo.</p>
+          <p className="text-sm text-stone-warm mt-1">
+            Aparece de forma sutil en la seccion de contacto. Deja vacio para no mostrarlo.
+          </p>
         </div>
         <input
           type="tel"
           value={settings.phone}
           onChange={(e) => update('phone', e.target.value)}
+          onBlur={() => saveNow()}
           placeholder="+52 xxx xxx xxxx"
           className="w-full max-w-xs border-b border-stone-warm bg-transparent py-2 text-stone-dark outline-none focus:border-stone-dark transition-colors duration-[400ms]"
         />
       </section>
 
-      {/* Hero */}
+      {/* ── Portada ── */}
       <section className="space-y-4">
         <div>
           <h2 className="font-serif text-lg">Portada</h2>
@@ -76,13 +115,14 @@ export default function SiteSettingsEditor({ initial }: Props) {
           label="Foto de portada"
           value={settings.heroImageUrl}
           onChange={({ url, cloudinaryId }) => {
-            update('heroImageUrl', url)
-            update('heroImageCloudinaryId', cloudinaryId)
+            const overrides = { heroImageUrl: url, heroImageCloudinaryId: cloudinaryId }
+            setSettings((prev) => { const n = { ...prev, ...overrides }; settingsRef.current = n; return n })
+            saveNow(overrides)
           }}
         />
       </section>
 
-      {/* Portrait */}
+      {/* ── Retrato ── */}
       <section className="space-y-4">
         <div>
           <h2 className="font-serif text-lg">Retrato</h2>
@@ -92,17 +132,20 @@ export default function SiteSettingsEditor({ initial }: Props) {
           label="Foto de retrato"
           value={settings.portraitUrl}
           onChange={({ url, cloudinaryId }) => {
-            update('portraitUrl', url)
-            update('portraitCloudinaryId', cloudinaryId)
+            const overrides = { portraitUrl: url, portraitCloudinaryId: cloudinaryId }
+            setSettings((prev) => { const n = { ...prev, ...overrides }; settingsRef.current = n; return n })
+            saveNow(overrides)
           }}
         />
       </section>
 
-      {/* Bio */}
+      {/* ── Biografía ── */}
       <section className="space-y-4">
         <div>
           <h2 className="font-serif text-lg">Biografia</h2>
-          <p className="text-sm text-stone-warm mt-1">El texto de presentacion en la seccion "Sobre Jorge".</p>
+          <p className="text-sm text-stone-warm mt-1">
+            El texto de presentacion en la seccion "Sobre Jorge".
+          </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -110,6 +153,7 @@ export default function SiteSettingsEditor({ initial }: Props) {
             <textarea
               value={settings.bioEs}
               onChange={(e) => update('bioEs', e.target.value)}
+              onBlur={() => saveNow()}
               rows={5}
               className="w-full border border-gray-200 p-3 text-sm text-stone-dark outline-none focus:border-stone-dark transition-colors duration-[400ms] resize-none"
             />
@@ -119,6 +163,7 @@ export default function SiteSettingsEditor({ initial }: Props) {
             <textarea
               value={settings.bioEn}
               onChange={(e) => update('bioEn', e.target.value)}
+              onBlur={() => saveNow()}
               rows={5}
               className="w-full border border-gray-200 p-3 text-sm text-stone-dark outline-none focus:border-stone-dark transition-colors duration-[400ms] resize-none"
             />
@@ -126,11 +171,13 @@ export default function SiteSettingsEditor({ initial }: Props) {
         </div>
       </section>
 
-      {/* Statement */}
+      {/* ── Frase principal ── */}
       <section className="space-y-4">
         <div>
           <h2 className="font-serif text-lg">Frase principal</h2>
-          <p className="text-sm text-stone-warm mt-1">La cita en cursiva sobre fondo oscuro entre las secciones.</p>
+          <p className="text-sm text-stone-warm mt-1">
+            La cita en cursiva sobre fondo oscuro entre las secciones.
+          </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -139,6 +186,7 @@ export default function SiteSettingsEditor({ initial }: Props) {
               type="text"
               value={settings.statementEs}
               onChange={(e) => update('statementEs', e.target.value)}
+              onBlur={() => saveNow()}
               className="w-full border-b border-stone-warm bg-transparent py-2 text-stone-dark outline-none focus:border-stone-dark transition-colors duration-[400ms]"
             />
           </div>
@@ -148,24 +196,13 @@ export default function SiteSettingsEditor({ initial }: Props) {
               type="text"
               value={settings.statementEn}
               onChange={(e) => update('statementEn', e.target.value)}
+              onBlur={() => saveNow()}
               className="w-full border-b border-stone-warm bg-transparent py-2 text-stone-dark outline-none focus:border-stone-dark transition-colors duration-[400ms]"
             />
           </div>
         </div>
       </section>
 
-      {/* Save */}
-      <div className="flex items-center gap-6 pt-6 border-t border-gray-100">
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="cursor-pointer text-xs uppercase tracking-widest border border-stone-dark px-6 py-3 hover:bg-stone-dark hover:text-ivory transition-all duration-[400ms] disabled:opacity-50"
-        >
-          {saving ? 'Guardando...' : 'Guardar cambios'}
-        </button>
-        {saved && <p className="text-sm text-green-700">Cambios guardados correctamente.</p>}
-        {error && <p className="text-sm text-red-600">{error}</p>}
-      </div>
     </div>
   )
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { uploadImageDirect } from './upload'
 
 interface ImageUploadFieldProps {
   label: string
@@ -11,36 +12,19 @@ interface ImageUploadFieldProps {
 
 export default function ImageUploadField({ label, value, hint, onChange }: ImageUploadFieldProps) {
   const [uploading, setUploading] = useState(false)
-  const [dragOver, setDragOver] = useState(false)
-  const [error, setError] = useState('')
+  const [dragOver,  setDragOver]  = useState(false)
+  const [error,     setError]     = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
   async function uploadFile(file: File) {
     if (!file.type.startsWith('image/')) return
     setUploading(true)
     setError('')
-
     try {
-      const sigRes = await fetch('/api/upload-signature')
-      if (!sigRes.ok) { setError('Error al obtener firma de subida.'); return }
-      const { timestamp, signature, apiKey } = await sigRes.json()
-
-      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('folder', 'jorge-portfolio')
-      formData.append('timestamp', String(timestamp))
-      formData.append('signature', signature)
-      formData.append('api_key', apiKey)
-
-      const uploadRes = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-        { method: 'POST', body: formData },
-      )
-      if (!uploadRes.ok) { setError('Error al subir la imagen.'); return }
-
-      const uploaded = await uploadRes.json()
-      onChange({ url: uploaded.secure_url, cloudinaryId: uploaded.public_id })
+      const result = await uploadImageDirect(file)
+      onChange({ url: result.url, cloudinaryId: result.cloudinaryId })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al subir la imagen')
     } finally {
       setUploading(false)
     }
@@ -77,7 +61,11 @@ export default function ImageUploadField({ label, value, hint, onChange }: Image
           type="file"
           accept="image/*"
           className="hidden"
-          onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadFile(f) }}
+          onChange={(e) => {
+            const f = e.target.files?.[0]
+            if (f) uploadFile(f)
+            e.target.value = ''
+          }}
         />
         {uploading ? (
           <p className="text-sm text-stone-warm">Subiendo...</p>
