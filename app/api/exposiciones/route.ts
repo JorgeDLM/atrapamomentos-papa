@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await request.json()
-  const { name, venue, city, date, descEs, descEn } = body
+  const { name, nameEn, venue, city, date, descEs, descEn } = body
 
   if (!name || !venue || !city || !date) {
     return NextResponse.json({ error: 'Faltan campos requeridos' }, { status: 400 })
@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
   const exhibition = await db.exhibition.create({
     data: {
       name,
+      nameEn: nameEn || '',
       venue,
       city,
       date: new Date(date),

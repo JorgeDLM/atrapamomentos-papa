@@ -18,6 +18,7 @@ interface ExhibitionPhoto {
 export interface Exhibition {
   id: string
   name: string
+  nameEn: string
   venue: string
   city: string
   date: Date
@@ -72,6 +73,7 @@ export default function Exhibitions({ exhibitions, locale }: ExhibitionsProps) {
           {exhibitions.map((ex) => {
             const year = new Date(ex.date).getFullYear()
             const desc = locale === 'es' ? ex.descEs : ex.descEn
+            const displayName = locale === 'es' ? ex.name : (ex.nameEn || ex.name)
 
             return (
               <div key={ex.id} className="exhibit-row py-8 opacity-0">
@@ -80,7 +82,7 @@ export default function Exhibitions({ exhibitions, locale }: ExhibitionsProps) {
                     {year}
                   </span>
                   <div>
-                    <p className="font-serif text-base text-stone-dark">{ex.name}</p>
+                    <p className="font-serif text-base text-stone-dark">{displayName}</p>
                     <p className="font-sans text-sm text-stone-warm mt-0.5">
                       {ex.venue}
                     </p>

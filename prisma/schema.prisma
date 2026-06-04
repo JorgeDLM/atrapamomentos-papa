@@ -45,6 +45,7 @@ model Photo {
 model Exhibition {
   id        String            @id @default(cuid())
   name      String
+  nameEn    String            @default("")
   venue     String
   city      String
   date      DateTime

@@ -14,10 +14,9 @@ export default function ExhibitionForm({ exhibition }: ExhibitionFormProps) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
-  // Format date for input[type=date]
-  const defaultDate = exhibition
-    ? new Date(exhibition.date).toISOString().split('T')[0]
-    : ''
+  const defaultYear = exhibition
+    ? String(new Date(exhibition.date).getFullYear())
+    : String(new Date().getFullYear())
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -25,11 +24,14 @@ export default function ExhibitionForm({ exhibition }: ExhibitionFormProps) {
     setError('')
 
     const fd = new FormData(e.currentTarget)
+    const year = parseInt(fd.get('year') as string, 10)
+
     const data = {
       name:   fd.get('name'),
+      nameEn: fd.get('nameEn'),
       venue:  fd.get('venue'),
       city:   fd.get('city'),
-      date:   fd.get('date'),
+      date:   `${year}-01-01`,
       descEs: fd.get('descEs') || undefined,
       descEn: fd.get('descEn') || undefined,
     }
@@ -56,16 +58,30 @@ export default function ExhibitionForm({ exhibition }: ExhibitionFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl space-y-8">
-      <div>
-        <label className="block text-xs uppercase tracking-widest text-stone-warm mb-2">
-          Nombre
-        </label>
-        <input
-          name="name"
-          required
-          defaultValue={exhibition?.name ?? ''}
-          className="w-full border-b border-gray-300 bg-transparent py-2 outline-none focus:border-stone-dark transition-colors duration-[400ms]"
-        />
+
+      {/* Bilingual name */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-xs uppercase tracking-widest text-stone-warm mb-2">
+            Nombre (ES)
+          </label>
+          <input
+            name="name"
+            required
+            defaultValue={exhibition?.name ?? ''}
+            className="w-full border-b border-gray-300 bg-transparent py-2 outline-none focus:border-stone-dark transition-colors duration-[400ms]"
+          />
+        </div>
+        <div>
+          <label className="block text-xs uppercase tracking-widest text-stone-warm mb-2">
+            Name (EN)
+          </label>
+          <input
+            name="nameEn"
+            defaultValue={exhibition?.nameEn ?? ''}
+            className="w-full border-b border-gray-300 bg-transparent py-2 outline-none focus:border-stone-dark transition-colors duration-[400ms]"
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -93,16 +109,18 @@ export default function ExhibitionForm({ exhibition }: ExhibitionFormProps) {
         </div>
       </div>
 
-      <div>
+      <div className="max-w-[120px]">
         <label className="block text-xs uppercase tracking-widest text-stone-warm mb-2">
-          Fecha
+          Ano
         </label>
         <input
-          name="date"
-          type="date"
+          name="year"
+          type="number"
           required
-          defaultValue={defaultDate}
-          className="w-full border-b border-gray-300 bg-transparent py-2 outline-none focus:border-stone-dark transition-colors duration-[400ms]"
+          min={1900}
+          max={2100}
+          defaultValue={defaultYear}
+          className="w-full border-b border-gray-300 bg-transparent py-2 outline-none focus:border-stone-dark transition-colors duration-[400ms] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />
       </div>
 

@@ -10,10 +10,11 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 
   const { id } = await params
   const body = await request.json()
-  const { name, venue, city, date, descEs, descEn, published, order } = body
+  const { name, nameEn, venue, city, date, descEs, descEn, published, order } = body
 
   const data: Record<string, unknown> = {}
   if (name      !== undefined) data.name      = name
+  if (nameEn    !== undefined) data.nameEn    = nameEn
   if (venue     !== undefined) data.venue     = venue
   if (city      !== undefined) data.city      = city
   if (date      !== undefined) data.date      = new Date(date)

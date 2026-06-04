@@ -61,6 +61,7 @@ export default async function LandingPage({ params }: Props) {
   let exhibitions: {
     id: string
     name: string
+    nameEn: string
     venue: string
     city: string
     date: Date
