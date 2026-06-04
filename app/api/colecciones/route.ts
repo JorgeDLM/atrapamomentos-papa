@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
   }
 
   const collection = await db.collection.create({
-    data: { titleEs, titleEn, descEs, descEn, coverImage, slug },
+    data: { titleEs, titleEn, descEs, descEn, coverImage, slug, published: true },
   })
 
   return NextResponse.json(collection, { status: 201 })

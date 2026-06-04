@@ -17,7 +17,7 @@ export default async function CollectionsPage({ params }: Props) {
   })
 
   return (
-    <main className="pt-32 pb-24 px-6 md:px-12 min-h-screen">
+    <main className="pt-32 pb-24 px-6 md:px-12">
       <div className="max-w-7xl mx-auto">
         <h1 className="font-serif text-sm uppercase tracking-[0.3em] text-stone-warm mb-16">
           {t('title')}

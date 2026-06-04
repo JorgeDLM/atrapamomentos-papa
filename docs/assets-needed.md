@@ -106,7 +106,7 @@ Fotografiarlo frente a una pared blanca lisa, con buena iluminacion uniforme (si
 **Tono:** Poetico, personal, verdadero. No marketing.
 
 **Ejemplo:**
-> "Fotografio para encontrar lo que ya estaba ahi."
+> "Fotografio para encontrar lo que ya estaba ahí."
 
 **Debe estar en español e inglés.**
 

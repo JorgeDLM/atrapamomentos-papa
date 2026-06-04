@@ -21,9 +21,11 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <NextIntlClientProvider messages={messages}>
       <SmoothScrollProvider>
-        <Nav />
-        {children}
-        <Footer />
+        <div className="flex min-h-screen flex-col">
+          <Nav />
+          <div className="flex-1">{children}</div>
+          <Footer />
+        </div>
       </SmoothScrollProvider>
     </NextIntlClientProvider>
   )

@@ -8,7 +8,7 @@
     "scroll": "Desplazar"
   },
   "statement": {
-    "text": "Fotografio para encontrar lo que ya estaba ahi."
+    "text": "Fotografio para encontrar lo que ya estaba ahí."
   },
   "collections": {
     "title": "Colecciones",
@@ -36,6 +36,8 @@
     "rights": "Todos los derechos reservados"
   },
   "gallery": {
+    "title": "Galeria",
+    "subtitle": "Una seleccion de imagenes",
     "photos": "fotografias",
     "close": "Cerrar",
     "prev": "Anterior",

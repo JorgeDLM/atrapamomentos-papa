@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       cloudinaryId: result.public_id,
-      url: `https://res.cloudinary.com/${cloudName}/image/upload/f_auto,q_auto/${result.public_id}`,
+      url: `https://res.cloudinary.com/${cloudName}/image/upload/f_auto,q_auto:best/${result.public_id}`,
       width: result.width,
       height: result.height,
     })

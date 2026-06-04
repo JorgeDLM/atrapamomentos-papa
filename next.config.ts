@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
     root: path.resolve(__dirname),
   },
   images: {
+    // Allow high-quality values (Next 16 only permits declared qualities).
+    qualities: [75, 90, 95, 100],
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: 'https',

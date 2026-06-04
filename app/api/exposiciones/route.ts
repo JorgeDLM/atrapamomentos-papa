@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
       date: new Date(date),
       descEs: descEs || null,
       descEn: descEn || null,
+      published: true,
     },
   })
 

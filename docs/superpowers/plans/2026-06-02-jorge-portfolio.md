@@ -760,7 +760,7 @@ git commit -m "feat: next-intl i18n routing (ES/EN) + admin auth middleware"
     "scroll": "Desplazar"
   },
   "statement": {
-    "text": "Fotografio para encontrar lo que ya estaba ahi."
+    "text": "Fotografio para encontrar lo que ya estaba ahí."
   },
   "collections": {
     "title": "Colecciones",

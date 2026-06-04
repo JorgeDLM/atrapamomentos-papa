@@ -68,26 +68,26 @@ export default function CollectionsPreview({ collections }: CollectionsPreviewPr
         <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-12">
           {featured[0] && (
             <div className="md:col-span-2 aspect-[4/3]">
-              <PhotoCard {...featured[0]} className="h-full" parallax />
+              <PhotoCard {...featured[0]} className="h-full" parallax sizes="(max-width: 768px) 100vw, 66vw" />
             </div>
           )}
           {(featured[1] || featured[2]) && (
             <div className="flex flex-col gap-3">
               {featured[1] && (
                 <div className="flex-1 aspect-square">
-                  <PhotoCard {...featured[1]} className="h-full" parallax />
+                  <PhotoCard {...featured[1]} className="h-full" parallax sizes="(max-width: 768px) 100vw, 33vw" />
                 </div>
               )}
               {featured[2] && (
                 <div className="flex-1 aspect-square">
-                  <PhotoCard {...featured[2]} className="h-full" parallax />
+                  <PhotoCard {...featured[2]} className="h-full" parallax sizes="(max-width: 768px) 100vw, 33vw" />
                 </div>
               )}
             </div>
           )}
           {featured[3] && (
             <div className="md:col-span-3 aspect-[21/9]">
-              <PhotoCard {...featured[3]} className="h-full" parallax />
+              <PhotoCard {...featured[3]} className="h-full" parallax sizes="100vw" />
             </div>
           )}
         </div>

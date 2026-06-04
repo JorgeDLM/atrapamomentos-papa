@@ -16,6 +16,9 @@ interface PhotoCardProps {
   coverImage: string
   className?: string
   parallax?: boolean
+  /** Responsive sizes hint — must match the slot's real display width so Next
+   *  serves a source large enough to stay sharp on this photography site. */
+  sizes?: string
 }
 
 export default function PhotoCard({
@@ -25,6 +28,7 @@ export default function PhotoCard({
   coverImage,
   className = '',
   parallax = false,
+  sizes = '(max-width: 768px) 100vw, 70vw',
 }: PhotoCardProps) {
   const locale = useLocale()
   const title = locale === 'es' ? titleEs : titleEn
@@ -68,7 +72,8 @@ export default function PhotoCard({
           src={coverImage}
           alt={title}
           fill
-          sizes="(max-width: 768px) 100vw, 50vw"
+          sizes={sizes}
+          quality={95}
           className={`object-cover transition-transform duration-700 ease-out ${parallax ? '' : 'group-hover:scale-[1.03]'}`}
         />
       </div>

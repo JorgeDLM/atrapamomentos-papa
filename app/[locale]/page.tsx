@@ -1,11 +1,16 @@
 import { db } from '@/lib/db'
 import Hero from '@/components/landing/Hero'
 import Statement from '@/components/landing/Statement'
-import CollectionsPreview from '@/components/landing/CollectionsPreview'
+import ParallaxGallery, { type GalleryPhoto } from '@/components/landing/ParallaxGallery'
 import Bio from '@/components/landing/Bio'
 import ParallaxStrip from '@/components/landing/ParallaxStrip'
 import Exhibitions from '@/components/landing/Exhibitions'
 import Contact from '@/components/landing/Contact'
+
+const GALLERY_LIMIT = 48
+// Pleasant varied ratios used only as a fallback when a collection has a cover
+// but no individual photos yet.
+const FALLBACK_RATIOS = [0.8, 1, 1.3, 0.75, 1.5]
 
 const DEFAULTS = {
   phone: '',
@@ -14,7 +19,7 @@ const DEFAULTS = {
   portraitUrl: '/jorge.jpg',
   bioEs: 'Jorge de la Mora Toscana fotografía lo que pasa cuando nadie mira. Sus series recorren mercados, calles al amanecer y animales en su ritmo propio, buscando el instante en que lo ordinario revela algo que no tiene nombre.',
   bioEn: 'Jorge de la Mora Toscana photographs what happens when no one is watching. His series traverse markets, streets at dawn, and animals in their own rhythm — searching for the instant when the ordinary reveals something nameless.',
-  statementEs: 'Fotografio para encontrar lo que ya estaba ahi.',
+  statementEs: 'Fotografio para encontrar lo que ya estaba ahí.',
   statementEn: 'I photograph to find what was already there.',
 }
 
@@ -45,15 +50,64 @@ export default async function LandingPage({ params }: Props) {
     // DB unavailable — use defaults
   }
 
-  let collections: { id: string; slug: string; titleEs: string; titleEn: string; coverImage: string }[] = []
+  let galleryPhotos: GalleryPhoto[] = []
   try {
-    const rawCollections = await db.collection.findMany({
+    const cols = await db.collection.findMany({
       where: { published: true },
       orderBy: { order: 'asc' },
-      select: { id: true, slug: true, titleEs: true, titleEn: true, coverImage: true },
-      take: 4,
+      select: {
+        slug: true,
+        titleEs: true,
+        titleEn: true,
+        coverImage: true,
+        photos: {
+          orderBy: { order: 'asc' },
+          select: { id: true, url: true, width: true, height: true },
+        },
+      },
     })
-    collections = rawCollections.map((c: { id: string; slug: string; titleEs: string; titleEn: string; coverImage: string | null }) => ({ ...c, coverImage: c.coverImage ?? '' }))
+
+    // One bucket of photos per collection, tagged with collection info.
+    const buckets = cols.map((c) =>
+      c.photos.map((p) => ({
+        id: p.id,
+        url: p.url,
+        width: p.width,
+        height: p.height,
+        collectionSlug: c.slug,
+        collectionTitleEs: c.titleEs,
+        collectionTitleEn: c.titleEn,
+      })),
+    )
+
+    // Round-robin interleave so the masonry mixes collections instead of
+    // showing one collection fully before the next.
+    const interleaved: GalleryPhoto[] = []
+    const maxLen = buckets.reduce((m, b) => Math.max(m, b.length), 0)
+    for (let i = 0; i < maxLen; i++) {
+      for (const bucket of buckets) {
+        if (bucket[i]) interleaved.push(bucket[i])
+      }
+    }
+
+    // Fallback: collections that only have a cover (no photos yet) still appear.
+    if (interleaved.length === 0) {
+      cols.forEach((c, i) => {
+        if (!c.coverImage) return
+        const ratio = FALLBACK_RATIOS[i % FALLBACK_RATIOS.length]
+        interleaved.push({
+          id: c.slug,
+          url: c.coverImage,
+          width: Math.round(ratio * 1000),
+          height: 1000,
+          collectionSlug: c.slug,
+          collectionTitleEs: c.titleEs,
+          collectionTitleEn: c.titleEn,
+        })
+      })
+    }
+
+    galleryPhotos = interleaved.slice(0, GALLERY_LIMIT)
   } catch {
     // DB not available
   }
@@ -90,7 +144,7 @@ export default async function LandingPage({ params }: Props) {
     <main>
       <Hero imageUrl={site.heroImageUrl} />
       <Statement text={statement} />
-      <CollectionsPreview collections={collections} />
+      <ParallaxGallery photos={galleryPhotos} />
       <Bio
         portraitUrl={site.portraitUrl}
         bioEs={site.bioEs}

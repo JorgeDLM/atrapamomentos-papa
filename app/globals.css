@@ -23,6 +23,27 @@
   --font-sans: var(--font-dm-sans), system-ui, sans-serif;
 }
 
+/* Gallery loading shimmer — animated placeholder while photos load */
+@keyframes pg-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.pg-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-ivory-dark) 30%,
+    var(--color-ivory) 50%,
+    var(--color-ivory-dark) 70%
+  );
+  background-size: 200% 100%;
+  animation: pg-shimmer 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-shimmer { animation: none; }
+}
+
 /* Lenis smooth scroll */
 html.lenis,
 html.lenis body {

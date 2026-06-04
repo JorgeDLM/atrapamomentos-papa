@@ -60,15 +60,18 @@ export default function Hero({ imageUrl }: HeroProps) {
         style={{ backgroundImage: `url(${imageUrl})` }}
       />
 
-      {/* Subtle overlay for text legibility */}
-      <div className="absolute inset-0 bg-stone-dark/10" />
+      {/* Dark overlay for text legibility — flat tint + vertical gradient
+          that anchors the nav (top) and scroll cue (bottom) for a refined look */}
+      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/10 to-black/50" />
 
-      {/* Centered text */}
+      {/* Centered text — z-10 keeps it ABOVE the overlay; text-shadow guarantees
+          legibility even over bright areas of the photo */}
       <div
         ref={textRef}
-        className="absolute inset-0 flex flex-col items-center justify-center text-ivory-light"
+        className="absolute inset-0 z-10 flex flex-col items-center justify-center text-ivory-light [text-shadow:0_2px_24px_rgba(0,0,0,0.6)]"
       >
-        <p className="text-xs uppercase tracking-[0.4em] mb-6 font-sans text-ivory-light/70">
+        <p className="text-xs uppercase tracking-[0.4em] mb-6 font-sans text-ivory-light/80">
           Photography
         </p>
         <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl text-center leading-tight">
@@ -76,8 +79,8 @@ export default function Hero({ imageUrl }: HeroProps) {
           <br />
           <span className="italic font-light">Toscana</span>
         </h1>
-        <div className="mt-16 flex flex-col items-center gap-3 text-ivory-light/50">
-          <div className="w-px h-12 bg-ivory-light/30 animate-pulse" />
+        <div className="mt-16 flex flex-col items-center gap-3 text-ivory-light/70">
+          <div className="w-px h-12 bg-ivory-light/40 animate-pulse" />
           <span className="text-xs uppercase tracking-widest font-sans">
             {t('scroll')}
           </span>

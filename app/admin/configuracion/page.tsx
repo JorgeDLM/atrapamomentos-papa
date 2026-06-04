@@ -13,7 +13,7 @@ const DEFAULTS = {
   portraitCloudinaryId: '',
   bioEs: 'Jorge de la Mora Toscana fotografía lo que pasa cuando nadie mira. Sus series recorren mercados, calles al amanecer y animales en su ritmo propio, buscando el instante en que lo ordinario revela algo que no tiene nombre.',
   bioEn: 'Jorge de la Mora Toscana photographs what happens when no one is watching. His series traverse markets, streets at dawn, and animals in their own rhythm — searching for the instant when the ordinary reveals something nameless.',
-  statementEs: 'Fotografio para encontrar lo que ya estaba ahi.',
+  statementEs: 'Fotografio para encontrar lo que ya estaba ahí.',
   statementEn: 'I photograph to find what was already there.',
 }
 

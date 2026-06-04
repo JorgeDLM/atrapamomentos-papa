@@ -36,6 +36,8 @@
     "rights": "All rights reserved"
   },
   "gallery": {
+    "title": "Gallery",
+    "subtitle": "A selection of images",
     "photos": "photographs",
     "close": "Close",
     "prev": "Previous",
