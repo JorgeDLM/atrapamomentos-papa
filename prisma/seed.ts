@@ -1,8 +1,8 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaPg } from '@prisma/adapter-pg'
 import bcrypt from 'bcryptjs'
+import { createPrismaAdapter, resolveConnectionString } from '../lib/prisma-adapter'
 
-const adapter = new PrismaPg({ connectionString: process.env.DIRECT_URL ?? process.env.DATABASE_URL })
+const adapter = createPrismaAdapter(resolveConnectionString())
 const prisma = new PrismaClient({ adapter })
 
 async function main() {

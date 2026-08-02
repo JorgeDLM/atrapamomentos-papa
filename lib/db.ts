@@ -1,9 +1,8 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaPg } from '@prisma/adapter-pg'
+import { createPrismaAdapter, resolveConnectionString } from './prisma-adapter'
 
 function createPrismaClient() {
-  const connectionString = process.env.DIRECT_URL ?? process.env.DATABASE_URL
-  const adapter = new PrismaPg({ connectionString })
+  const adapter = createPrismaAdapter(resolveConnectionString())
   return new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === 'development' ? ['error'] : [],

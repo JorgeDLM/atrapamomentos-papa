@@ -5,7 +5,14 @@ import path from 'path'
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts')
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ['@prisma/client', '@prisma/adapter-pg', 'pg', 'bcryptjs'],
+  serverExternalPackages: [
+    '@prisma/client',
+    '@prisma/adapter-pg',
+    '@prisma/adapter-neon',
+    '@neondatabase/serverless',
+    'pg',
+    'bcryptjs',
+  ],
   turbopack: {
     root: path.resolve(__dirname),
   },

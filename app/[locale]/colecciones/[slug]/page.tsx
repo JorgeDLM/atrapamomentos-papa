@@ -7,17 +7,12 @@ type Props = {
   params: Promise<{ locale: string; slug: string }>
 }
 
-export async function generateStaticParams() {
-  try {
-    const collections = await db.collection.findMany({
-      where: { published: true },
-      select: { slug: true },
-    })
-    return collections.map((c: { slug: string }) => ({ slug: c.slug }))
-  } catch {
-    return []
-  }
-}
+// Sin `generateStaticParams`: esta página se renderiza a petición, igual que
+// /[locale] y /[locale]/colecciones. El layout de [locale] resuelve el idioma
+// con `getMessages()`, que lee la petición; declarar la ruta como estática
+// hacía que cada render muriera con DYNAMIC_SERVER_USAGE — 500 en toda la ruta,
+// con cualquier slug y en los dos idiomas. Además devolvía sólo el slug, sin el
+// locale, así que no llegaba a pregenerar ni una página.
 
 export default async function CollectionPage({ params }: Props) {
   const { slug } = await params
